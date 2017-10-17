@@ -15,6 +15,9 @@
 # Dependencies
 - ^[Dd]ependencies/
 
+# Distributions
+- (^|/)dist/
+
 # C deps
 #  https://github.com/joyent/node
 - ^deps/
@@ -47,6 +50,9 @@
 # Go dependencies
 - Godeps/_workspace/
 
+# GNU indent profiles
+- .indent.pro
+
 # Minified JavaScript and CSS
 - (\.|-)min\.(js|css)$
 
@@ -65,6 +71,9 @@
 
 # Normalize.css
 - (^|/)normalize\.(css|less|scss|styl)$
+
+# Skeleton.css
+- (^|/)skeleton\.(css|less|scss|styl)$
 
 # Bourbon css
 - (^|/)[Bb]ourbon/.*\.(css|less|scss|styl)$
@@ -126,6 +135,9 @@
 - .sublime-project
 - .sublime-workspace
 
+# VS Code workspace files
+- .vscode
+
 # Prototype
 - (^|/)prototype(.*)\.js$
 - (^|/)effects\.js$
@@ -165,7 +177,7 @@
 # Chart.js
 - (^|/)Chart\.js$
 
-# Codemirror
+# CodeMirror
 - (^|/)[Cc]ode[Mm]irror/(\d+\.\d+/)?(lib|mode|theme|addon|keymap|demo)
 
 # SyntaxHighlighter - http://alexgorbatchev.com/
@@ -181,6 +193,9 @@
 
 # React
 - (^|/)react(-[^.]*)?\.js$
+
+# flow-typed
+- (^|/)flow-typed/.*\.js$
 
 # Modernizr
 - (^|/)modernizr\-\d\.\d+(\.\d+)?\.js$
@@ -228,6 +243,15 @@
 
 # Fabric
 - Fabric.framework/
+
+# BuddyBuild
+- BuddyBuildSDK.framework/
+
+# Realm
+- Realm.framework
+
+# RealmSwift
+- RealmSwift.framework
 
 # git config files
 - gitattributes$

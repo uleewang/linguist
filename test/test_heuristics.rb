@@ -1,6 +1,6 @@
 require_relative "./helper"
 
-class TestHeuristcs < Minitest::Test
+class TestHeuristics < Minitest::Test
   include Linguist
 
   def fixture(name)
@@ -29,7 +29,11 @@ class TestHeuristcs < Minitest::Test
     hash.each do |language, blobs|
       Array(blobs).each do |blob|
         result = Heuristics.call(file_blob(blob), candidates)
-        assert_equal [Language[language]], result, "Failed for #{blob}"
+        if language.nil?
+          assert_equal [], result, "Failed for #{blob}"
+        else
+          assert_equal [Language[language]], result, "Failed for #{blob}"
+        end
       end
     end
   end
@@ -38,6 +42,13 @@ class TestHeuristcs < Minitest::Test
     blob = Linguist::FileBlob.new(File.join(samples_path, "Objective-C/hello.m"))
     match = Linguist.detect(blob)
     assert_equal Language["Objective-C"], match
+  end
+
+  def test_as_by_heuristics
+    assert_heuristics({
+      "ActionScript" => all_fixtures("ActionScript", "*.as"),
+      "AngelScript" => all_fixtures("AngelScript", "*.as")
+    })
   end
 
   # Candidate languages = ["AGS Script", "AsciiDoc", "Public Key"]
@@ -69,6 +80,15 @@ class TestHeuristcs < Minitest::Test
     })
   end
 
+  def test_cls_by_heuristics
+    assert_heuristics({
+      "TeX" => all_fixtures("TeX", "*.cls"),
+      nil => all_fixtures("Apex", "*.cls"),
+      nil => all_fixtures("OpenEdge ABL", "*.cls"),
+      nil => all_fixtures("Visual Basic", "*.cls"),
+    })
+  end
+
   def test_cs_by_heuristics
     assert_heuristics({
       "C#" => all_fixtures("C#", "*.cs"),
@@ -93,7 +113,7 @@ class TestHeuristcs < Minitest::Test
 
   def test_f_by_heuristics
     assert_heuristics({
-      "FORTRAN" => all_fixtures("FORTRAN", "*.f") + all_fixtures("FORTRAN", "*.for"),
+      "Fortran" => all_fixtures("Fortran", "*.f") + all_fixtures("Fortran", "*.for"),
       "Forth" => all_fixtures("Forth", "*.f") + all_fixtures("Forth", "*.for")
     })
   end
@@ -122,9 +142,21 @@ class TestHeuristcs < Minitest::Test
     })
   end
 
+  # Candidate languages = ["Assembly", "C++", "HTML", "PAWN", "PHP",
+  #                        "POV-Ray SDL", "Pascal", "SQL", "SourcePawn"]
   def test_inc_by_heuristics
     assert_heuristics({
-      "PHP" => all_fixtures("PHP", "*.inc")
+      "PHP" => all_fixtures("PHP", "*.inc"),
+      "POV-Ray SDL" => all_fixtures("POV-Ray SDL", "*.inc")
+    })
+  end
+
+  def test_l_by_heuristics
+    assert_heuristics({
+      "Common Lisp" => all_fixtures("Common Lisp", "*.l"),
+      "Lex" => all_fixtures("Lex", "*.l"),
+      "Roff" => all_fixtures("Roff", "*.l"),
+      "PicoLisp" => all_fixtures("PicoLisp", "*.l")
     })
   end
 
@@ -142,6 +174,41 @@ class TestHeuristcs < Minitest::Test
     })
   end
 
+  def test_m_by_heuristics
+    assert_heuristics({
+      "Objective-C" => all_fixtures("Objective-C", "*.m") - all_fixtures("Objective-C", "cocoa_monitor.m"),
+      "Mercury" => all_fixtures("Mercury", "*.m"),
+      "MUF" => all_fixtures("MUF", "*.m"),
+      "M" => all_fixtures("M", "MDB.m"),
+      "Mathematica" => all_fixtures("Mathematica", "*.m") - all_fixtures("Mathematica", "Problem12.m"),
+      "Matlab" => all_fixtures("Matlab", "create_ieee_paper_plots.m"),
+      "Limbo" => all_fixtures("Limbo", "*.m"),
+      nil => ["Objective-C/cocoa_monitor.m"]
+    })
+  end
+
+  def test_md_by_heuristics
+    assert_heuristics({
+      "Markdown" => all_fixtures("Markdown", "*.md"),
+      "GCC Machine Description" => all_fixtures("GCC Machine Description", "*.md")
+    })
+  end
+
+  def test_ms_by_heuristics
+    assert_heuristics({
+      "Roff" => all_fixtures("Roff", "*.ms"),
+      "Unix Assembly" => all_fixtures("Unix Assembly", "*.ms"),
+      "MAXScript" => all_fixtures("MAXScript", "*.ms")
+    })
+  end
+
+  def test_n_by_heuristics
+    assert_heuristics({
+      "Roff" => all_fixtures("Roff", "*.n"),
+      "Nemerle" => all_fixtures("Nemerle", "*.n")
+    })
+  end
+
   # Candidate languages = ["C++", "Objective-C"]
   def test_obj_c_by_heuristics
     # Only calling out '.h' filenames as these are the ones causing issues
@@ -152,28 +219,21 @@ class TestHeuristcs < Minitest::Test
     })
   end
 
-  # Candidate languages = ["Perl", "Perl6", "Prolog"]
+  # Candidate languages = ["Perl", "Perl 6", "Prolog"]
   def test_pl_prolog_perl_by_heuristics
     assert_heuristics({
       "Prolog" => all_fixtures("Prolog", "*.pl"),
       "Perl" => ["Perl/oo1.pl", "Perl/oo2.pl", "Perl/oo3.pl", "Perl/fib.pl", "Perl/use5.pl"],
-      "Perl6" => all_fixtures("Perl6", "*.pl")
+      "Perl 6" => all_fixtures("Perl 6", "*.pl")
     })
   end
 
-  # Candidate languages = ["Perl", "Perl6"]
-  def test_pm_perl_by_heuristics
+  # Candidate languages = ["Perl", "Perl 6", "XPM"]
+  def test_pm_by_heuristics
     assert_heuristics({
       "Perl" => all_fixtures("Perl", "*.pm"),
-      "Perl6" => all_fixtures("Perl6", "*.pm")
-    })
-  end
-
-  # Candidate languages = ["Pod", "Perl"]
-  def test_pod_by_heuristics
-    assert_heuristics({
-      "Perl" => all_fixtures("Perl", "*.pod"),
-      "Pod" => all_fixtures("Pod", "*.pod")
+      "Perl 6" => all_fixtures("Perl 6", "*.pm"),
+      "XPM" => all_fixtures("XPM", "*.pm")
     })
   end
 
@@ -191,6 +251,13 @@ class TestHeuristcs < Minitest::Test
     assert_heuristics({
       "R" => all_fixtures("R", "*.r") + all_fixtures("R", "*.R"),
       "Rebol" => all_fixtures("Rebol", "*.r")
+    })
+  end
+
+  def test_rno_by_heuristics
+    assert_heuristics({
+      "RUNOFF" => all_fixtures("RUNOFF", "*.rno"),
+      "Roff" => all_fixtures("Roff", "*.rno")
     })
   end
 
@@ -212,13 +279,13 @@ class TestHeuristcs < Minitest::Test
     })
   end
 
-  # Candidate languages = ["Perl", "Perl6"]
+  # Candidate languages = ["Perl", "Perl 6"]
   def test_t_perl_by_heuristics
     assert_heuristics({
       "Perl" => all_fixtures("Perl", "*.t"),
-      "Perl6" => ["Perl6/01-dash-uppercase-i.t", "Perl6/01-parse.t", "Perl6/advent2009-day16.t",
-                  "Perl6/basic-open.t", "Perl6/calendar.t", "Perl6/for.t", "Perl6/hash.t",
-                  "Perl6/listquote-whitespace.t"]
+      "Perl 6" => ["Perl 6/01-dash-uppercase-i.t", "Perl 6/01-parse.t", "Perl 6/advent2009-day16.t",
+                   "Perl 6/basic-open.t", "Perl 6/calendar.t", "Perl 6/for.t", "Perl 6/hash.t",
+                   "Perl 6/listquote-whitespace.t"]
     })
   end
 
@@ -226,6 +293,13 @@ class TestHeuristcs < Minitest::Test
     assert_heuristics({
       "TypeScript" => all_fixtures("TypeScript", "*.ts"),
       "XML" => all_fixtures("XML", "*.ts")
+    })
+  end
+
+  def test_tsx_by_heuristics
+    assert_heuristics({
+      "TypeScript" => all_fixtures("TypeScript", "*.tsx"),
+      "XML" => all_fixtures("XML", "*.tsx")
     })
   end
 end
